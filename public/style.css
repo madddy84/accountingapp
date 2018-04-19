@@ -1,0 +1,112 @@
+.add-proj-btn {
+    margin-top: 25px;
+    margin-left: -29px;
+}
+
+.listaccounts {
+    max-height: 500px;
+    margin-top: 20px;
+}
+
+.cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    min-height: 15px;
+}
+
+.header {
+    border: solid 1px darkgray;
+    font-size: large;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    background-color: lightgray;
+    height: 35px;
+    padding-top: 4px;
+}
+
+.remarks {
+    font-family: cursive;
+    width: 80px;
+    display: inline-block;
+    /*border-top: solid 1px lightgray;*/
+}
+
+.drill-button {
+    margin-top: 7px;
+}
+
+.btnTransact {
+    float: right;
+}
+
+.carditemtitle {
+    display: none;
+    font-family: cursive;
+    width: 80px;
+}
+
+.carditemtitle1 {
+    display: none;
+    font-family: cursive;
+    width: 80px;
+}
+
+.card {
+    background-color: ghostwhite;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    margin-top: 1px;
+}
+
+.user-1 {
+    background-color: khaki;
+}
+
+.user-2 {
+    background-color: lavender;
+}
+
+.amount {
+    text-align: right;
+}
+
+@media (max-width: 991px) {
+
+    .carditemtitle1 {
+        display: inline-block;
+    }
+
+    .amount {
+        text-align: left;
+    }
+
+    .header1 {
+        display: none;
+    }
+
+        .header1 > .amount {
+            text-align: left;
+        }
+}
+
+@media (max-width: 768px) {
+
+    .amount {
+        text-align: left;
+    }
+
+    .header {
+        display: none;
+    }
+
+    .carditemtitle {
+        display: inline-block;
+    }
+
+    .card {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+        border-radius: 5px;
+        border: solid 1px lightslategray;
+        margin-bottom: 8px;
+    }
+}

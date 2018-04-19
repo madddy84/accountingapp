@@ -1,0 +1,170 @@
+﻿<div class="container-fluid" ng-controller="ListAccountController as lac">
+    <div class="row d-print-none">
+
+        <div class="form-grup col-sm-3">
+            <div class="row">
+                <div class="col-xs-10">
+                    <label for="project">Project(Site)</label>
+                    <select id="project" class="form-control" ng-model="$root.selectedProject">
+                        <option value="">[ALL]</option>
+                        <option ng-repeat="project in lac.projects" value="{{project.name}}">{{project.name}}</option>
+                    </select>
+                </div>
+                <div class="col-xs-2">
+                    <input class="btn btn-default add-proj-btn" type="button" ng-click="lac.onAddProject()" value="+" />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-grup col-sm-3" ng-if="lac.selectedTab !=='Received' && lac.selectedTab !=='UserAccounts' ">
+            <label for="vendor">Vendor</label>
+            <select id="vendor" class="form-control" ng-model="lac.selectedVendor">
+                <option value="">[ALL]</option>
+                <option ng-repeat="item in lac.accountDetails | unique:'vendor'" ng-show="item.vendor !=='Not applicable'">{{item.vendor}}</option>
+            </select>
+        </div>
+
+        <div class="form-grup col-sm-3">
+            <label for="user">User</label>
+
+            <select id="user" class="form-control" ng-model="lac.selectedUser">
+                <option value="">[ALL]</option>
+                <option ng-repeat="item in lac.accountDetails | unique:'createdBy'">{{item.createdBy}}</option>
+            </select>
+        </div>
+
+    </div>
+    <br />
+
+    <style>
+    </style>
+
+    <ul class="nav nav-tabs d-print-none" role="tablist" ng-init="lac.selectedTab='Paid'" ng-click="lac.selectedVendor=''">
+        <li role="presentation" ng-class="{active: lac.selectedTab==='Paid'}"><a href="" ng-click="lac.selectedTab ='Paid'" aria-controls="home" role="tab" data-toggle="tab">Payments</a></li>
+        <li role="presentation" ng-class="{active: lac.selectedTab==='Received'}"><a href="" ng-click="lac.selectedTab ='Received'" aria-controls="home" role="tab" data-toggle="tab">Advance Receipt</a></li>
+        <li role="presentation" ng-class="{active: lac.selectedTab==='UserAccounts'}"><a href="" ng-click="lac.selectedTab ='UserAccounts'" aria-controls="home" role="tab" data-toggle="tab">User Accounts</a></li>
+        <li role="presentation" ng-class="{active: lac.selectedTab==='OnCredit'}"><a href="" ng-click="lac.selectedTab ='OnCredit'" aria-controls="home" role="tab" data-toggle="tab">On Credit</a></li>
+        <li ng-if="$root.selectedProject && lac.selectedTab!=='UserAccounts'" class="btnTransact"> <button class="btn btn-primary " ng-click="lac.onAddTransaction()">Add transaction</button></li>
+    </ul>
+
+    <div ng-if="lac.selectedTab ==='Paid' || lac.selectedTab ==='Received'" class="container-fluid">
+
+        <div class="row header">
+            <div class="col-xs-10">
+                <div class="row ">
+                    <div class="cell col-sm-2">Date</div>
+                    <div ng-if="lac.selectedTab==='Paid'" class="cell col-sm-5">Vendor</div>
+                    <div ng-if="lac.selectedTab!=='Paid'" class="cell col-sm-5">Project (Site)</div>
+                    <div class="cell col-sm-2 amount">Amount</div>
+                    <div class="cell col-sm-3">{{lac.selectedTab}} By</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row card {{lac.users[item.createdBy]}}" ng-repeat="item in lac.accountDetails |
+             filter : {type: lac.selectedTab, project : ($root.selectedProject || item.project),
+             vendor: (lac.selectedVendor || item.vendor),
+             createdBy : (lac.selectedUser || item.createdBy)}">
+
+            <div class="col-xs-10">
+                <div class="row ">
+                    <div class="cell col-sm-2">
+                        <div class="carditemtitle">Date:</div>{{item.date}}
+                    </div>
+                    <div ng-if="lac.selectedTab!=='Received'" class="cell col-sm-5">
+                        <div class="carditemtitle">Vendor:</div>{{item.vendor}}
+                    </div>
+                    <div ng-if="lac.selectedTab ==='Received'" class="cell col-sm-5">
+                        <div class="carditemtitle">Project:</div>{{item.project}}
+                    </div>
+                    <div class="cell col-sm-2 amount">
+                        <div class="carditemtitle">Amount:</div>{{item.amount | currency:"₹ ":2}}
+                    </div>
+                    <div class="cell col-sm-3">
+                        <div class="carditemtitle">
+                            Paid {{lac.selectedTab==="Received" ? "to":"by"}}:
+                        </div>{{item.createdBy}}
+                    </div>
+                    <div class="cell col-sm-12 col-xs-12 remarksdiv">
+                        <div class="remarks">Remarks:</div> <i>{{item.remarks}}</i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-2 text-center">
+                <div class="fa fa-edit fa-3x drill-button" ng-if="item.createdBy=== $root.user.email" ng-click="$root.selectedProject = item.project" ui-sref="edit({id: item.id, type:lac.selectedTab})" style="cursor: pointer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="lac.selectedTab==='UserAccounts'" class="container-fluid">
+
+        <div class="row header">
+            <div class="col-sm-3">User Name</div>
+            <div class="col-sm-3 amount">Amount Received</div>
+            <div class="col-sm-3 amount">Amount Paid</div>
+            <div class="col-sm-3 amount">Balance</div>
+        </div>
+        <div class="row card {{lac.users[key]}}" ng-repeat="(key, value) in lac.accountDetails |
+             filter : {project : $root.selectedProject || item.project, vendor: lac.selectedVendor || item.vendor, createdBy : lac.selectedUser || item.createdBy, type:'!OnCredit'}  | groupBy:'createdBy'">
+            <div class="col-sm-3 col-xs-6 cell"><div class="carditemtitle">User:</div>{{key}}</div>
+            <div class="col-sm-3 col-xs-6 cell amount"><div class="carditemtitle">Amr Rxd:</div>{{rxd = lac.getSum(value,'Received') | currency:"₹ ":2}}</div>
+            <div class="col-sm-3 col-xs-6 cell amount"><div class="carditemtitle">Amt Paid:</div>{{paid =lac.getSum(value,'Paid') | currency:"₹ ":2}}</div>
+            <div class="col-sm-3 col-xs-6 cell amount"><div class="carditemtitle">Balance:</div>{{rxd-paid | currency:"₹ ":2}}</div>
+        </div>
+    </div>
+
+    <div ng-if="lac.selectedTab ==='OnCredit'" class="container-fluid">
+
+        <div class="row header header1">
+            <div class="col-sm-11 col-xs-10">
+                <div class="row ">
+                    <div class="cell col-md-2">Date</div>
+                    <div class="cell col-md-2">Taken By</div>
+                    <div class="cell col-md-2">Vendor</div>
+                    <div class="cell col-md-2">Project</div>
+                    <div class="cell col-md-1 amount">Amount</div>
+                    <div class="cell col-md-1 amount">Settled</div>
+                    <div class="cell col-md-1 amount">Balance</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row card {{lac.users[item.createdBy]}}" ng-repeat="item in lac.accountDetails |
+             filter : {type: lac.selectedTab, project : ($root.selectedProject || item.project),
+             vendor: (lac.selectedVendor || item.vendor),
+             createdBy : (lac.selectedUser || item.createdBy), isCreditSettled : false}">
+
+            <div class="col-sm-11 col-xs-10">
+                <div class="row ">
+                    <div class="cell col-md-2">
+                        <div class="carditemtitle1">Date:</div>{{item.date}}
+                    </div>
+                    <div class="cell col-md-2">
+                        <div class="carditemtitle1">Taken By:</div>{{item.createdBy}}
+                    </div>
+                    <div class="cell col-md-2">
+                        <div class="carditemtitle1">Vendor:</div>{{item.vendor}}
+                    </div>
+                    <div class="cell col-md-2">
+                        <div class="carditemtitle1">Project:</div>{{item.project}}
+                    </div>
+                    <div class="cell col-md-1 amount">
+                        <div class="carditemtitle1">Amount:</div>{{item.amount | currency:"₹ ":2}}
+                    </div>
+                    <div class="cell col-md-1 amount">
+                        <div class="carditemtitle1">Settled:</div>{{item.settlementAmount | currency:"₹ ":2}}
+                    </div>
+                    <div class="cell col-md-1 amount">
+                        <div class="carditemtitle1">Balance:</div>{{item.amount - item.settlementAmount | currency:"₹ ":2}}
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-sm-1 col-xs-2 text-center">
+                <div class="fa fa-edit fa-3x drill-button" ng-if="item.createdBy=== $root.user.email" ng-click="$root.selectedProject = item.project" ui-sref="edit({id: item.id, type:lac.selectedTab})" style="cursor: pointer"></div>
+                <div class="fa fa-check fa-3x drill-button" ng-if="item.createdBy=== $root.user.email && item.type==='OnCredit'" ng-click="lac.onSettleCredit(item)" style="cursor: pointer"></div>
+            </div>
+        </div>
+    </div>
+</div>

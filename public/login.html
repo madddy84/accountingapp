@@ -1,0 +1,24 @@
+<div class="container" ng-controller="LoginController as lc">
+	<h2>Login</h2>
+	<form ng-submit="lc.onLoginClick(lc.email,lc.password)">
+	  <div class="form-group">
+		<label for="email">Email address:</label>
+		<input type="email" class="form-control" id="email" ng-model="lc.email">
+	  </div>
+	  <div class="form-group">
+		<label for="pwd">Password:</label>
+		<input type="password" class="form-control" id="pwd" ng-model="lc.password">
+	  </div>
+	   <button type="submit" class="btn btn-default" >Submit</button>
+	   <div>{{lc.errorMessage}} <i>{{lc.errorCode}}</i>
+	   <div>
+	</form>
+	
+</div>
+
+<script>
+
+
+
+
+</script>
